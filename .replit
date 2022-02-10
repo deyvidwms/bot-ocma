@@ -1,0 +1,2 @@
+language = "nodejs"
+run = "gcc bot_B.c -o bot_B && clear && node ocma -q bot_B"
