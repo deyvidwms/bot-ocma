@@ -1,26 +1,22 @@
-/********************************************************************
-  Bot-exemplo
-
-  Após receber as informações iniciais do jogo, a cada rodada esse
-  bot irá se movimentar para esquerda.
-  Cabe a você agora aprimorar sua estratégia!!!
- ********************************************************************/
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 
 #define MAX_STR 50
 
+// Estrutura de um bot.
 typedef struct
 {
   char id[50];
   int x;
   int y;
 } Bot;
+
+// Variaveis referentes ao armazenamento dos bots, lista e quantidade.
 Bot *bots;
 int qtdBots = 0; 
 
+// Estrutura de um peixe.
 typedef struct
 {
   int x;
@@ -28,29 +24,40 @@ typedef struct
   int quantidade;
   int valor;
 } Peixe;
+
+// Variaveis referentes ao armazenamento dos peixes, lista e quantidade.
 Peixe *peixes;
 int qtdPeixes = 0; 
 
+// Estrutura de um porto.
 typedef struct
 {
   int x;
   int y;
 } Porto;
+
+// Variaveis referentes ao armazenamento dos portos, lista e quantidade.
 Porto *portos;
 int qtdPortos = 0; 
 
+// Dados do bot, capacidade e cordenadas atuais.
 int capacidade = 0;
 int by, bx;
 
-/* ADAPTAR EM FUNÇÃO DE COMO OS DADOS SERÃO ARMAZENADOS NO SEU BOT */
+
+// Movimentação padrão inicial.
+char movHorizontal[10] = "LEFT";
+char movVertical[10] = "UP";
+
+
+// -- FUNÇÕES --
+// Ler os dados fornecidos ao bot e os armazena em variavies.
 void readData(int h, int w)
 {
   char id[MAX_STR];
   int v, n, x, y;
   int contPeixe = 0;
   int contPorto = 0;
-
-  // lê os dados da área de pesca
   for (int i = 0; i < h; i++)
   {
     for (int j = 0; j < w; j++)
@@ -58,16 +65,13 @@ void readData(int h, int w)
       scanf("%i", &v);
       if (v == 1)
       {
-        // adiciona os portos aos dados
         portos = realloc(portos, sizeof(Porto) * (contPorto + 1));
         portos[contPorto].x = j;
         portos[contPorto].y = i;
-        // printf("portos[%d, %d]", portos[contPorto].x, portos[contPorto].y);
         contPorto += 1;
       }
       else if (v > 1)
       {
-        // adiciona os peixes aos dados
         int dezena = ((int)(v / 10.0)) * 10;
         int unidade = v - dezena;
 
@@ -93,22 +97,18 @@ void readData(int h, int w)
 
   qtdPeixes = contPeixe;
   qtdPortos = contPorto;
-
-  // lê os dados dos bots
   scanf(" BOTS %i", &n);
   qtdBots = n;
-  // o " " antes de BOTS é necessário para ler o '\n' da linha anterior
   bots = malloc(sizeof(Bot) * n);
   for (int i = 0; i < n; i++)
   {
-    // adiciona os bots aos dados
     scanf("%s %i %i", bots[i].id, &bots[i].y, &bots[i].x);
   }
 }
 
-char movHorizontal[10] = "LEFT";
-char movVertical[10] = "UP";
 
+
+// Checa se a cordenada indicada está ocupada por um outro bot, caso a cordenada seja um porto mesmo que tenha outro bot lá ele retorna 0, retorna 1 caso a posição esteja ocupada.
 int checkBotIn (int x, int y){
   for (int j = 0; j < qtdPortos; j++){
     if(portos[j].x == x && portos[j].y == y){
@@ -122,6 +122,7 @@ int checkBotIn (int x, int y){
   return 0;
 }
 
+// Tenta movimentar horizontalmente, caso não seja possivel tenta movimnetar verticalmente, retorna 1 caso consiga movimentar.
 int tryMove(int w, int h, int x, int y, char mH[], char mV[]){
   if (checkValidPosition(w,h,x,y,mH) == 1){
     printf("%s\n",mH);
@@ -133,6 +134,7 @@ int tryMove(int w, int h, int x, int y, char mH[], char mV[]){
     return 0;
 }
 
+// Checa se a movimentação indicada é valida, retorna 1 caso seja.
 int checkValidPosition(int w, int h, int x, int y, char direcao[]) {
   if (strcmp(direcao, "LEFT") == 0){
     if(x == 0 || checkBotIn (x-1, y) == 1){
@@ -161,6 +163,7 @@ int checkValidPosition(int w, int h, int x, int y, char direcao[]) {
   return 1; 
 }
 
+// Verifica se deve pescar, retorna 1 se estiver sobre um ponto de pesca valido, e a capacidade do barco estiver menor que 10.
 int canFish (int bx, int by){
   for (int i = 0; i < qtdPeixes; i++) {
     if(bx == peixes[i].x && by == peixes[i].y && capacidade < 10) {
@@ -170,6 +173,7 @@ int canFish (int bx, int by){
   return 0;
 }
 
+// Verifica se deve vender, retorna 1 se estiver sobre um porte e a capacidade do barco for maior que 0, indicando que existe algum peixe guardado.
 int canSell (int bx, int by){
   for (int i = 0; i < qtdPortos; i++) {
     if(bx == portos[i].x && by == portos[i].y && capacidade > 0) {
@@ -179,6 +183,7 @@ int canSell (int bx, int by){
   return 0;
 }
 
+// Verifica se deve andar, retorna 1 se não puder pescar ou vender.
 int canMove (int f, int s){
   if (f == 0 && s ==0)
     return 1;
@@ -187,86 +192,41 @@ int canMove (int f, int s){
 
 int main() 
 {
-  char line[MAX_STR]; // dados temporários
-  char myId[MAX_STR]; // identificador do bot em questão
-
-  setbuf(stdin, NULL);  // stdin, stdout e stderr não terão buffers
-  setbuf(stdout, NULL); // assim, nada é "guardado temporariamente"
+  char line[MAX_STR];
+  char myId[MAX_STR]; 
+  setbuf(stdin, NULL);
+  setbuf(stdout, NULL); 
   setbuf(stderr, NULL);
 
-  // === INÍCIO DA PARTIDA ===
   int h, w;
 
-  scanf("AREA %i %i", &h, &w); // lê a dimensão da área de pesca: altura (h) x largura (w)
-  scanf(" ID %s", myId);       // ...e o id do bot
-  // obs: o " " antes de ID é necessário para ler o '\n' da linha anterior
+  scanf("AREA %i %i", &h, &w);
+  scanf(" ID %s", myId);
 
-  // char nomeArquivo[60] = "";
-  // strcat(nomeArquivo, myId);
-  // strcat(nomeArquivo, ".txt");
 
-  // FILE *arquivo = fopen(nomeArquivo, "w+"); // abre arquivo
-
-  // if (arquivo == NULL)
-  // {
-  //   printf("Erro na abertura do arquivo");
-  // }
-  // else
-  // {
-  //   fprintf(arquivo, "%d", 10000); // Escreve uma linha no arquivo
-  //   fclose(arquivo); // fecha o arquivo
-  // }
-
-  // Para "debugar", é possível enviar dados para a saída de erro padrão (stderr).
-  // Esse dado não será enviado para o simulador, apenas para o terminal.
-  // A linha seguinte é um exemplo. Pode removê-la se desejar.
-  // fprintf(stderr, "Meu id = %s\n", myId);
-
-  // === PARTIDA ===
-  // O bot entra num laço infinito, mas não se preocupe porque o simulador irá matar
-  // o processo quando o jogo terminar.
   while (1)
   {
     readData(h, w);
 
-    // Printa informações
-
-
-
-      // Portos
-    // fprintf(stderr, "Portos:\n");
-    // for (int i = 0; i < qtdPortos; i++) {
-    //   fprintf(stderr, "[X: %d,Y: %d]\n", portos[i].x, portos[i].y);
-    // }
-
-    // Peixes disponives
-    // fprintf(stderr, "Peixes:\n");
-    // for (int i = 0; i < qtdPeixes; i++) {
-    //   if(peixes[i].y == by)
-    //     fprintf(stderr, "[X: %d,Y: %d,Quantidade: %d\n", peixes[i].x,peixes[i].y, peixes[i].quantidade);
-    // }
-    
-      // Informações do bot
-    // fprintf(stderr, "Capacidade do bot: %d\n", capacidade);
+    // Indentifica o bot pelo myID e guarda as cordenadas.
     for (int i = 0; i < qtdBots ; i++){
       if(strcmp(myId, bots[i].id) == 0){
-        // fprintf(stderr, "Cordenadas do Bot:\n");
         bx = bots[i].x, by = bots[i].y;  
-        // fprintf(stderr, "[X: %d,Y: %d]\n", bx, by);
       }
     }
+    
 
-    // Ação tomado
-
+    // Verifica se deve andar fazer outra ação.
     if (canMove(canFish(bx, by), canSell(bx, by)) == 1){
-      // LOGICA DE MOVIMENTAÇÃO
 
+      // Logica de movimentação do bot burro: Se movimenta na horizontal, caso encontre algum obstaculo inverte o sentido do movimento horizontal e se movimenta verticalmente, caso encontre um obstaculo inverte o sentido da movimentação vertical e se movimenta horizontalmente.
       if(tryMove(w,h,bx,by,movHorizontal,movVertical) == 0){
         tryMove(w,h,bx,by,movHorizontal,movVertical);
       }
 
-      //FIM da LOGICA DE MOVIMENTAÇÃO
     } else {
+
+      // Logica de execução de outra ação qualquer, no caso se for possivel pescar ele pesca e se caso for possivel vender ele vende.
       if(canFish(bx, by) == 1) {
         capacidade++;
         printf("FISH\n");
@@ -276,10 +236,6 @@ int main()
         printf("SELL\n");
       }
     }
-
-    
-
-    // lê qual foi o resultado da ação (e eventualmente atualiza os dados do bot).
     scanf("%s", line);
   }
 
