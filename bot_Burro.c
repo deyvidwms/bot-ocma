@@ -110,6 +110,11 @@ char movHorizontal[10] = "LEFT";
 char movVertical[10] = "UP";
 
 int checkBotIn (int x, int y){
+  for (int j = 0; j < qtdPortos; j++){
+    if(portos[j].x == x && portos[j].y == y){
+      return 0;
+    }
+  }
   for (int i = 0; i < qtdBots ; i++){
     if(bots[i].x == x && bots[i].y == y)
       return 1;
