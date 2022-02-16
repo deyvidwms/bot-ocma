@@ -1,6 +1,36 @@
 # OCMA
 Jogo de simulação em uma área de pesca gerenciada pelo OCMA - Órgão de Controle do Meio Ambiente.
 
+## Importante
+Para executar os bots basta executar os seguintes comandos no terminal (linux),
+
+Para o bot A:
+
+```sh
+$ gcc -o bot_A bot_A.c
+```
+
+Para o bot B:
+
+```sh
+$ gcc -o bot_B bot_B.c
+```
+
+Para o bot Burro:
+
+```sh
+$ gcc -o bot_Burro bot_Burro.c
+```
+
+Para executar os bots junto do ocma, basta fazer, também no terminal,
+
+```sh
+$ node ocma bot_A bot_B
+```
+
+(Você pode optar por colocar apenas os dois bots - A e B).
+
+
 ## Introdução
 
 O litoral nordestino é cheio de recursos naturais que estão desaparecendo devido à exploração indiscriminada. Estes recursos são necessários para milhares de pessoas, inclusive para por na mesa seu alimento diário. Nossa fauna marinha é um exemplo disso. Temos uma grande variedade peixes: pargo, cioba, ariacó, dentão, guaíba, sirigado, robalo, badejo, serra, cavala... Enfim, são muitos. Porém, o que deveria ser uma atividade sustentável, a pesca dos animais que ainda não chegaram à fase de reprodução, sem importar o tamanho ou idade, passa a ser insustentável (literalmente). Com o tempo, a população diminui e torna-se um risco à espécie... e à mesa das pessoas.
